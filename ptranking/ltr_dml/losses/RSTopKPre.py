@@ -1,5 +1,6 @@
 import torch
 from pytorch_metric_learning.losses import BaseMetricLossFunction
+from pytorch_metric_learning.distances import CosineSimilarity
 from .util import get_pairwise_stds, get_pairwise_similarity, dist
 
 class RSTopKPreLoss(BaseMetricLossFunction):
@@ -14,6 +15,7 @@ class RSTopKPreLoss(BaseMetricLossFunction):
         self.name = 'RSTopKPreLoss'
         self.k = k
         self.margin = 0.1
+        self.distance = CosineSimilarity()
 
     def compute_loss(self, embeddings, labels, indices_tuple):
         '''
@@ -24,8 +26,7 @@ class RSTopKPreLoss(BaseMetricLossFunction):
         :param margin:
         :return:
         '''
-
-        simi_mat = get_pairwise_similarity(batch_reprs=embeddings)
+        simi_mat = self.distance(embeddings)
         cls_match_mat = get_pairwise_stds(
             batch_labels=labels)
 
