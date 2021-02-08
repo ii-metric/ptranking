@@ -1,5 +1,6 @@
 import torch
 from pytorch_metric_learning.losses import BaseMetricLossFunction
+from pytorch_metric_learning.distances import CosineSimilarity
 from .util import get_pairwise_stds, get_pairwise_similarity, dist
 
 
@@ -9,12 +10,13 @@ class TopKPreLoss(BaseMetricLossFunction):
     Jing Lu, Chaofan Xu, Wei Zhang, Ling-Yu Duan, Tao Mei; The IEEE International Conference on Computer Vision (ICCV), 2019, pp. 7961-7970
     """
 
-    def __init__(self, k=4):#, anchor_id='Anchor', use_similarity=False, opt=None):
-        super().__init__()
+    def __init__(self, k=4, **kwargs):#, anchor_id='Anchor', use_similarity=False, opt=None):
+        super().__init__(**kwargs)
 
         self.name = 'TopKPreLoss'
         self.k = k
         self.margin = 0.1
+        self.distance = CosineSimilarity()
 
     def compute_loss(self, embeddings, labels, indices_tuple):
         '''
@@ -25,7 +27,7 @@ class TopKPreLoss(BaseMetricLossFunction):
         :param margin:
         :return:
         '''
-        simi_mat = get_pairwise_similarity(batch_reprs=embeddings)
+        simi_mat = self.distance(embeddings)
         cls_match_mat = get_pairwise_stds(
             batch_labels=labels)  # [batch_size, batch_size] S_ij is one if d_i and d_j are of the same class, zero otherwise
 
@@ -70,16 +72,12 @@ class TopKPreLoss(BaseMetricLossFunction):
         # batch_fn_nums = torch.sum(batch_false_negs.float(), dim=1)
         # print('batch_fn_nums', batch_fn_nums)
 
-        # batch_loss = 0
         batch_loss = torch.tensor(0., requires_grad=True).cuda()
         for i in range(cls_match_mat.size(0)):
             fp_num = int(batch_fp_nums.data[i].item())
             if fp_num > 0:  # error exists, in other words, skip correct case
-                # print('fp_num', fp_num)
                 all_false_neg = simi_mat_hat[i, :][batch_false_negs[i, :]]
-                # print('all_false_neg', all_false_neg)
                 top_false_neg, _ = torch.topk(all_false_neg, k=fp_num, sorted=False, largest=True)
-                # print('top_false_neg', top_false_neg)
 
                 false_pos = simi_mat_hat[i, :][batch_false_pos[i, :]]
 
