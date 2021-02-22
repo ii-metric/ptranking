@@ -1,6 +1,6 @@
 {"Parameters": {"RSTopKPreLoss":
   {
-    "k": 4
+    "k": 10
   }
 },
   "EvalSettings":
