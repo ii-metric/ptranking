@@ -9,4 +9,5 @@
   "num_epochs_train": 2,
   "dataset~OVERRIDE~": {"Cars196": {"download": "False"}},
   "sampler": {"MPerClassSampler":  {"m":  10}}
-}}
+},
+"bayes_opt_iters": 0}

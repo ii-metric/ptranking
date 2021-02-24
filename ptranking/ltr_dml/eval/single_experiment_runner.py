@@ -15,10 +15,13 @@ id_to_model = {"TopKPre": TopKPreLoss,
                "RSTopKPre": RSTopKPreLoss}
 
 class SingleExperimentRunner(BaseRunner):
-    def run(self, model_id=None):
-        print(model_id)
-        self.register("loss", id_to_model[model_id])
-        YR =self.set_YR_from_json(model_id)
+    def __init__(self, model_id=None, **kwargs):
+        super().__init__(**kwargs)
+        self.model_id=model_id
+
+    def run(self):
+        self.register("loss", id_to_model[self.model_id])
+        YR =self.set_YR_from_json(self.model_id)
         if YR.args.reproduce_results:
             return self.reproduce_results(YR)
         else:
@@ -72,7 +75,6 @@ class SingleExperimentRunner(BaseRunner):
                 setattr(YR.args, subfolder, yaml_names)
 
         #### loss parameters
-        import json
         json_file = '/home/dl-box/MT2020/ptranking/testing/ltr_dml/json/{}Parameter.json'.format(model_id)
         json_open = open(json_file, 'r')
         json_load = json.load(json_open)

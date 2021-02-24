@@ -17,24 +17,24 @@ args, _ = parser.parse_known_args()
 
 if __name__ == '__main__':
     models_to_run = ["TopKPre", "RSTopKPre"]
-    Bayse_opt_iter=0
     for model_id in models_to_run:
+        args.model_id = model_id
+        import json
+        json_file = '/home/dl-box/MT2020/ptranking/testing/ltr_dml/json/{}Parameter.json'.format(model_id)
+        json_open = open(json_file, 'r')
+        json_load = json.load(json_open)
+        Bayse_opt_iter = json_load["bayes_opt_iters"]
         if Bayse_opt_iter>0:
             args.bayes_opt_iters = Bayse_opt_iter
-            # if bayes_opt_iters > 0:
             from eval.bayes_opt_runner import BayesOptRunner
             args.reproductions = [int(x) for x in args.reproductions.split(",")]
-            args.model_id = model_id
             runner = BayesOptRunner
             r = runner(**(args.__dict__))
-            r.run(model_id=model_id)
+            r.run()
         else:
-            # from powerful_benchmarker.runners.single_experiment_runner import SingleExperimentRunner
             from eval.single_experiment_runner import SingleExperimentRunner
-
             runner = SingleExperimentRunner
             del args.bayes_opt_iters
             del args.reproductions
-            del args.model_id
             r = runner(**(args.__dict__))
-            r.run(model_id=model_id)
+            r.run()

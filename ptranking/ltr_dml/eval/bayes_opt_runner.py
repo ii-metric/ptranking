@@ -101,7 +101,7 @@ class BayesOptRunner(BaseRunner):
             self.YR, self.bayes_params = self.read_yaml_and_find_bayes()
             self.eval_primary_metric = c_f.first_val_of_dict(self.YR.args.hook_container)["primary_metric"]
 
-    def run(self, model_id=None):
+    def run(self):
         self.register("loss", id_to_model[self.model_id])
         ax_client = self.get_ax_client()
         trials = ax_client.experiment.trials
