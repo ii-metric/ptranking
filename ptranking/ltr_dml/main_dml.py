@@ -26,6 +26,8 @@ if __name__ == '__main__':
             args.reproductions = [int(x) for x in args.reproductions.split(",")]
             args.model_id = model_id
             runner = BayesOptRunner
+            r = runner(**(args.__dict__))
+            r.run(model_id=model_id)
         else:
             # from powerful_benchmarker.runners.single_experiment_runner import SingleExperimentRunner
             from eval.single_experiment_runner import SingleExperimentRunner
@@ -33,5 +35,6 @@ if __name__ == '__main__':
             runner = SingleExperimentRunner
             del args.bayes_opt_iters
             del args.reproductions
-        r = runner(**(args.__dict__))
-        r.run(model_id=model_id)
+            del args.model_id
+            r = runner(**(args.__dict__))
+            r.run(model_id=model_id)
