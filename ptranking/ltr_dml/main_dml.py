@@ -11,25 +11,27 @@ parser.add_argument("--merge_argparse_when_resuming", default=False, action='sto
 parser.add_argument("--root_config_folder", type=str, default=None)
 parser.add_argument("--bayes_opt_iters", type=int, default=0)
 parser.add_argument("--reproductions", type=str, default="0")
+parser.add_argument("--model_id", type=str, default=None)
 args, _ = parser.parse_known_args()
-
-if args.bayes_opt_iters > 0:
-    from powerful_benchmarker.runners.bayes_opt_runner import BayesOptRunner
-    args.reproductions = [int(x) for x in args.reproductions.split(",")]
-    runner = BayesOptRunner
-else:
-    # from powerful_benchmarker.runners.single_experiment_runner import SingleExperimentRunner
-    from eval.single_experiment_runner import SingleExperimentRunner
-    runner = SingleExperimentRunner
-    del args.bayes_opt_iters
-    del args.reproductions
 
 
 if __name__ == '__main__':
-    r = runner(**(args.__dict__))
-    # register loss functions
-    # r.register("loss", TopKPreLoss)
-    # r.register("loss", RSTopKPreLoss)
     models_to_run = ["TopKPre", "RSTopKPre"]
+    Bayse_opt_iter=2
     for model_id in models_to_run:
+        if Bayse_opt_iter>0:
+            args.bayes_opt_iters = Bayse_opt_iter
+            # if bayes_opt_iters > 0:
+            from eval.bayes_opt_runner import BayesOptRunner
+            args.reproductions = [int(x) for x in args.reproductions.split(",")]
+            args.model_id = model_id
+            runner = BayesOptRunner
+        else:
+            # from powerful_benchmarker.runners.single_experiment_runner import SingleExperimentRunner
+            from eval.single_experiment_runner import SingleExperimentRunner
+
+            runner = SingleExperimentRunner
+            del args.bayes_opt_iters
+            del args.reproductions
+        r = runner(**(args.__dict__))
         r.run(model_id=model_id)
