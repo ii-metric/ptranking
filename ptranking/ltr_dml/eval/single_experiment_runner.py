@@ -10,7 +10,6 @@ from losses.TopKPre import TopKPreLoss
 from losses.RSTopKPre import RSTopKPreLoss
 from easy_module_attribute_getter import YamlReader, PytorchGetter, utils as emag_utils
 import argparse
-import datetime
 
 id_to_model = {"TopKPre": TopKPreLoss,
                "RSTopKPre": RSTopKPreLoss}
@@ -27,8 +26,26 @@ class SingleExperimentRunner(BaseRunner):
 
     def set_YR_from_json(self, model_id):
         parser = argparse.ArgumentParser(allow_abbrev=False)
-        dt_now = datetime.datetime.now()
-        parser.add_argument("--experiment_name", type=str, required=False, default=model_id+"_"+dt_now.isoformat())
+        # experiment name
+        e_name = ""
+        import json
+        json_file = '/home/dl-box/MT2020/ptranking/testing/ltr_dml/json/{}Parameter.json'.format(model_id)
+        json_open = open(json_file, 'r')
+        json_load = json.load(json_open)
+        e_name+=model_id+"_"
+        json_para = json_load["Parameters"]
+        for loss in json_para:
+            for para in json_para[loss]:
+                e_name+=para
+                e_name+=str(json_para[loss][para])+"_"
+        e_name+=list(json_load["EvalSettings"]["dataset~OVERRIDE~"].keys())[0]+"_"
+        e_name+="B"
+        e_name+=str(json_load["EvalSettings"]["trainer"]["MetricLossOnly"]["batch_size"])+"_"
+        e_name+="m"
+        e_name+=str(json_load["EvalSettings"]["sampler"]["MPerClassSampler"]["m"])
+
+
+        parser.add_argument("--experiment_name", type=str, required=False, default=e_name)
         parser.add_argument("--resume_training", type=str, default=None, choices=["latest", "best"])
         parser.add_argument("--evaluate", action="store_true")
         parser.add_argument("--evaluate_ensemble", action="store_true")
