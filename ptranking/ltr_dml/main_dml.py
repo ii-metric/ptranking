@@ -17,7 +17,7 @@ args, _ = parser.parse_known_args()
 
 if __name__ == '__main__':
     models_to_run = ["TopKPre", "RSTopKPre"]
-    Bayse_opt_iter=2
+    Bayse_opt_iter=0
     for model_id in models_to_run:
         if Bayse_opt_iter>0:
             args.bayes_opt_iters = Bayse_opt_iter
