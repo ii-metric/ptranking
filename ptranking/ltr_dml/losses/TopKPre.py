@@ -10,7 +10,7 @@ class TopKPreLoss(BaseMetricLossFunction):
     Jing Lu, Chaofan Xu, Wei Zhang, Ling-Yu Duan, Tao Mei; The IEEE International Conference on Computer Vision (ICCV), 2019, pp. 7961-7970
     """
 
-    def __init__(self, k=4, **kwargs):#, anchor_id='Anchor', use_similarity=False, opt=None):
+    def __init__(self, k=4, **kwargs):
         super().__init__(**kwargs)
 
         self.name = 'TopKPreLoss'

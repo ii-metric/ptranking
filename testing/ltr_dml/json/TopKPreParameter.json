@@ -1,3 +1,13 @@
-{
-  "k":[5]
-}
+{"Parameters": {"TopKPreLoss":
+  {
+    "k": 5
+  }
+},
+  "EvalSettings":
+{ "trainer": {"MetricLossOnly": {"batch_size": 50}},
+  "splits_to_eval": ["train", "val", "test"],
+  "num_epochs_train": 1,
+  "dataset~OVERRIDE~": {"Cars196": {"download": "False"}},
+  "sampler": {"MPerClassSampler":  {"m":  10}}
+},
+"bayes_opt_iters": 0}
